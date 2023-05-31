@@ -1,0 +1,14 @@
+.header-component{
+    background-color: red;
+    width: 100%;
+    height: 50vh !important;
+    font-size: 1.2rem;
+    overflow: hidden;
+}
+.header-quote{
+    text-align: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    padding-top: 35px;
+    margin: 10px;
+}
