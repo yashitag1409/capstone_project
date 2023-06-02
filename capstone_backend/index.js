@@ -113,7 +113,9 @@ app.post("/loginCustomer", async (req, resp) => {
   var user_exist = await CUSTOMER_SCHEMA.findOne(
     { email: email },
     async (err, user) => {
-      if (!user.validPassword(req.body.password)) {
+      if (err) {
+        console.log(err);
+      } else if (!user.validPassword(req.body.password)) {
         msg = "Check Your Password And try Again";
       } else {
         msg = `Belcome Back ${user_exist.user_name}`;
@@ -137,8 +139,67 @@ app.post("/loginCustomer", async (req, resp) => {
 // i have to create a react component where i will send a restaurant email id and password through add item link so
 // i can call loginResturant api for adding product into restaurant menu list
 
-app.post("/addItem", async (req, resp) => {});
+app.post("/addItem", async (req, resp) => {
+  var email = req.body.email;
+  var user_exist = await CUSTOMER_SCHEMA.findOne({ email: email });
+  if (user_exist) {
+    const newItem = {
+      email: email,
+      res_name: req.body.resName,
+      item_name: req.body.itemName,
+      item_price: req.body.itemPrice,
+      type: req.body.itemType,
+    };
+
+    const item = new MENU_SCHEMA(newItem);
+
+    const result = await item.save();
+    console.log(result);
+    resp.status(200).send({ result: result });
+  } else {
+    var msg = "User Does Not exist My try Again ! SignUp / SignIn";
+    resp.status(400).send({ result: msg });
+  }
+});
 
 // DISPLAYING MENU OF ALL RESTUARENT
 
-app.post("/displaymenu", async (req, resp) => {});
+app.post("/displaymenubyResEmail", async (req, resp) => {
+  var email = req.body.email;
+  var user_exist = await CUSTOMER_SCHEMA.findOne({ email: email });
+
+  if (user_exist) {
+    var menuItem = await MENU_SCHEMA.find({ email: email });
+
+    resp.status(200).send({ menuItem: menuItem });
+  } else {
+    var msg = "Plz Check R u login? or try Again";
+    resp.status(400).send({ msg: msg });
+  }
+});
+
+// showing all menu to customer
+
+app.get("/displaymenu", async (req, resp) => {
+  var menuItem = await MENU_SCHEMA.find();
+
+  console.log(menuItem);
+
+  resp.status(200).send(menuItem);
+});
+
+// showing all menu to customer by re_name
+app.post("/displaymenubyResName", async (req, resp) => {
+  var resName = req.body.resName;
+
+  var res_exist = await MENU_SCHEMA.find({ res_name: resName });
+  if (res_exist) {
+    resp.status(200).send(res_exist);
+  } else {
+    // console.log(err);
+    resp.status(400).send({ msg: "Check Restaurant name" });
+  }
+});
+
+// Add to cart 
+
