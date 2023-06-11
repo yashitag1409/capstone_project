@@ -38,9 +38,13 @@ app.listen(port, (err) => {
 app.post("/registerRestaurant", async (req, resp) => {
   const email = req.body.email;
   // console.log(email);
+  const phoneNo = req.body.phoneNo;
+
+  var ID = "fw-" + email.substring(0, 3);
+
   var res_exist = await REGISTER_SCHEMA.findOne({ email: email });
-  // console.log(user_exist);
-  if (res_exist.email === email) {
+
+  if (res_exist) {
     resp.status(200).send({ msg: "Restaurant already Exist" });
   } else {
     var newRest = {
@@ -52,7 +56,8 @@ app.post("/registerRestaurant", async (req, resp) => {
       address: req.body.address,
       closing_time: req.body.closingTime,
       open_time: req.body.openTime,
-      phone_no: req.body.phoneNo,
+      phone_no: phoneNo,
+      id: ID,
     };
     const restaurant = new REGISTER_SCHEMA(newRest);
     const result = await restaurant.save();
@@ -101,6 +106,10 @@ app.post("/registerCustomer", async (req, resp) => {
     user.password = user.generateHash(req.body.password);
 
     const result = await user.save();
+    user_exist = await CUSTOMER_SCHEMA.findOne({ email: email });
+
+    // const id = user_exist._id.subString(0, 5);
+    // console.log(id);
     resp.status(200).send(result);
   }
 });
@@ -182,7 +191,7 @@ app.post("/displaymenubyResEmail", async (req, resp) => {
 
 app.get("/displaymenu", async (req, resp) => {
   var menuItem = await MENU_SCHEMA.find();
-
+  // console.log("++++++++++++++++++++++++++++");
   console.log(menuItem);
 
   resp.status(200).send(menuItem);
@@ -201,5 +210,9 @@ app.post("/displaymenubyResName", async (req, resp) => {
   }
 });
 
-// Add to cart 
+//Displaying Restaurant only
+app.post("/displayRes", async (req, resp) => {
+  var res_names = await REGISTER_SCHEMA.find();
 
+  resp.send({ data: res_names });
+});

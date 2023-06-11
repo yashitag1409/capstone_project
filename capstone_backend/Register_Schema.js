@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const Res_schema = new mongoose.Schema({
+  id: {
+    type: String,
+    required: true,
+  },
   owner_name: {
     type: String,
     required: true,
@@ -11,6 +15,7 @@ const Res_schema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    // unique: true,
   },
   password: {
     type: String,
@@ -22,11 +27,11 @@ const Res_schema = new mongoose.Schema({
   },
   city: {
     type: String,
-    required: true,
+    required: false,
   },
   state: {
     type: String,
-    required: true,
+    required: false,
   },
   open_time: {
     type: String,
@@ -39,6 +44,10 @@ const Res_schema = new mongoose.Schema({
   phone_no: {
     type: Number,
     required: true,
+  },
+  res_image: {
+    type: String,
+    required: false,
   },
 });
 

@@ -13,6 +13,10 @@ const order_schema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  order_pic: {
+    type: String,
+    required: true,
+  },
   address: {
     type: String,
     required: true,

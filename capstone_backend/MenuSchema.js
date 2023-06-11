@@ -17,6 +17,10 @@ const Menu_schema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  item_pic: {
+    type: String,
+    required: false,
+  },
   type: {
     type: String,
     required: true,

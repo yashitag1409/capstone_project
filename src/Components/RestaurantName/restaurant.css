@@ -1,0 +1,26 @@
+#restaurantSearchBar::placeholder {
+  /* justify-self: center; */
+  text-align: center;
+}
+#restaurantSearchBar {
+  text-align: center;
+}
+.socialLink {
+  /* display: none; */
+  margin-top: 50px;
+  top: 250px !important;
+}
+.socialLink:hover {
+  /* display: flex; */
+  /* top: 15px !important; */
+}
+.img-div {
+  clip-path: circle();
+}
+.box-div {
+  /* height: 50vh; */
+  text-transform: capitalize;
+}
+/* .box-div:hover {
+  height: 55vh; 
+} */

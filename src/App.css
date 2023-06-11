@@ -1,14 +1,24 @@
-.header-component{
-    background-color: red;
-    width: 100%;
-    height: 50vh !important;
-    font-size: 1.2rem;
-    overflow: hidden;
+body {
+  background-color: #f1f8ff;
 }
-.header-quote{
-    text-align: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    padding-top: 35px;
-    margin: 10px;
+
+.my-color {
+  color: #fea116;
+}
+Link {
+  color: #fea116;
+}
+* {
+  /* color: #FEA116; */
+}
+
+html {
+  scroll-behavior: smooth;
+  /* scrollbar-width: 2px; */
+}
+::-webkit-scrollbar {
+  width: 3px;
+  color: black;
+  /* background-color: red; */
+  behavior: smooth;
 }
