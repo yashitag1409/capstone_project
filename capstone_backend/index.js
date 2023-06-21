@@ -1,18 +1,32 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+
 const port = 4164 || PROCESS.env.PORT;
+
 const axios = require("axios");
 const mongoose = require("mongoose");
+
 const REGISTER_SCHEMA = require("./Register_Schema");
 const CUSTOMER_SCHEMA = require("./CustomerSchema");
 const ORDER_SCHEMA = require("./Order_Schema");
 const MENU_SCHEMA = require("./MenuSchema");
+
+const json = require("jsonwebtoken");
+var mysalt = "secretkey";
+
+const multer = require("multer");
+var path = require("path");
+const fs = require("fs");
+
 const password = "Naman1409";
 const dbUrl = `mongodb+srv://Yashit1409:${password}@cluster0.9d4zjkb.mongodb.net/foodweb`;
 
 app.use(cors());
 app.use(express.json());
+
+app.set("view engine", "ejs");
+app.set("view", path.join(__dirname, "/views"));
 
 mongoose
   .connect(dbUrl, {
@@ -25,12 +39,130 @@ mongoose
   .catch((err) => console.log(err));
 
 mongoose.set("strictQuery", false);
+
 app.listen(port, (err) => {
   if (err) {
     console.log(err);
   } else {
     console.log("Server is running on port : " + port);
   }
+});
+
+app.set("view engine", "ejs");
+app.set("view", path.join(__dirname, "/views"));
+// app.use(express.static(`${__dirname}/public`));
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Uploads is the Upload_folder_name
+    // mkdir()
+    cb(null, "uploads/" + req.body.email + "/");
+  },
+  filename: function (req, file, cb) {
+    console.log(file);
+    var filetypes = /pdf|jpeg|jpg|png/;
+    var mimetypes = filetypes.test(file.mimetype);
+    var ext = file.mimetype.split("/")[1];
+    // const mimTy = mime.split("/");
+    cb(null, file.fieldname + "-" + Date.now() + `.${ext}`);
+  },
+});
+
+// Define the maximum size for uploading
+// picture i.e. 1 MB. it is optional
+const maxSize = 1 * 1000 * 1000;
+
+var upload = multer({
+  storage: storage,
+  limits: { fileSize: maxSize },
+  fileFilter: function (req, file, cb) {
+    console.log(req);
+    // Set the filetypes, it is optional
+    var filetypes = /pdf|jpeg|jpg|png/;
+    var mimetype = filetypes.test(file.mimetype);
+
+    var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+
+    cb(
+      "Error: File upload only supports the " +
+        "following filetypes - " +
+        filetypes
+    );
+  },
+
+  // res is the name of file attribute
+}).single("res"); //frontend se file
+
+app.post("/upload", async (req, res, next) => {
+  const email = req.body.email;
+  upload(req, res, function (err) {
+    console.log("104");
+    console.log(req.body);
+    if (err) {
+      console.log("================");
+      console.log(err);
+    } else {
+      res.status(200).send({ msg: "file uploaded successfully" });
+    }
+  });
+  // const email = req.body.email;
+  // const type = req.body.type;
+  // if (type === "customer") {
+  //   var user_exist = await CUSTOMER_SCHEMA.findOne({ email: email });
+  //   if (user_exist) {
+  //     if (user_exist.password === req.body.password) {
+  //       upload(req, res, function (err) {
+  //         if (err) {
+  //           console.log("================");
+  //           console.log(err);
+  //         } else {
+  //           res.status(200).send({ msg: "file uploaded successfully" });
+  //         }
+  //       });
+  //       // resp
+  //       //   .status(200)
+  //       //   .send({ msg: `welcome Back ${res_exist.res_name}`, data: res_exist });
+  //     } else {
+  //       res.status(400).send({ msg: "Invalid Password" });
+  //     }
+  //   } else {
+  //     res.status(400).send({ msg: "Invalid Email Check your email" });
+  //   }
+  // } else {
+  //   var res_exist = await REGISTER_SCHEMA.findOne({ email: email });
+  //   if (res_exist) {
+  //     if (res_exist.password === req.body.password) {
+  //       upload(req, res, function (err) {
+  //         if (err) {
+  //           console.log("================");
+  //           console.log(err);
+  //         } else {
+  //           res.status(200).send({ msg: "file uploaded successfully" });
+  //         }
+  //       });
+  //       // resp
+  //       //   .status(200)
+  //       //   .send({ msg: `welcome Back ${res_exist.res_name}`, data: res_exist });
+  //     } else {
+  //       res.status(400).send({ msg: "Invalid Password" });
+  //     }
+  //   } else {
+  //     res.status(400).send({ msg: "Invalid Email Check your email" });
+  //   }
+  // }
+
+  // upload(req, res, function (err) {
+  //   if (err) {
+  //     console.log("================");
+  //     console.log(err);
+  //   } else {
+  //     res.status(200).send({ msg: "file uploaded successfully" });
+  //   }
+  // });
 });
 
 // ADDING RESTAURANT
@@ -44,9 +176,33 @@ app.post("/registerRestaurant", async (req, resp) => {
 
   var res_exist = await REGISTER_SCHEMA.findOne({ email: email });
 
+  path = "./uploads/" + email;
   if (res_exist) {
     resp.status(200).send({ msg: "Restaurant already Exist" });
   } else {
+    await fs.access(path, (error) => {
+      if (error) {
+        fs.mkdir(path, (error) => {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log(path);
+            console.log("New Directory created successfully !!");
+            var upResult = axios.post(
+              "http://localhost:4164/uploads",
+              req.files.res,
+              req.body.email,
+              req.body.password,
+              req.body.password
+            );
+            // console.log(upResult);
+          }
+        });
+      } else {
+        console.log("Given Directory already exists !!");
+      }
+    });
+
     var newRest = {
       owner_name: req.body.ownerName,
       res_name: req.body.resName,
@@ -58,7 +214,12 @@ app.post("/registerRestaurant", async (req, resp) => {
       open_time: req.body.openTime,
       phone_no: phoneNo,
       id: ID,
+      res_image: req.files.res.name,
     };
+    console.log(1);
+
+    // mkdir("./uploads/" + email);
+    // console.log(2);
     const restaurant = new REGISTER_SCHEMA(newRest);
     const result = await restaurant.save();
     // console.log(result._id);
@@ -192,7 +353,7 @@ app.post("/displaymenubyResEmail", async (req, resp) => {
 app.get("/displaymenu", async (req, resp) => {
   var menuItem = await MENU_SCHEMA.find();
   // console.log("++++++++++++++++++++++++++++");
-  console.log(menuItem);
+  // console.log(menuItem);
 
   resp.status(200).send(menuItem);
 });
@@ -216,3 +377,5 @@ app.post("/displayRes", async (req, resp) => {
 
   resp.send({ data: res_names });
 });
+
+// Food bloging site
