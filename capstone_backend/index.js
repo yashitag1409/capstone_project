@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const url = require("url");
 
 const port = 4164 || PROCESS.env.PORT;
 
@@ -56,15 +57,16 @@ var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Uploads is the Upload_folder_name
     // mkdir()
-    cb(null, "uploads/" + req.body.email + "/");
+    cb(null, "uploads/" + req.query.email + "/");
   },
   filename: function (req, file, cb) {
     console.log(file);
     var filetypes = /pdf|jpeg|jpg|png/;
     var mimetypes = filetypes.test(file.mimetype);
     var ext = file.mimetype.split("/")[1];
+    var fileName = file.fieldname + "-" + Date.now() + `.${ext}`;
     // const mimTy = mime.split("/");
-    cb(null, file.fieldname + "-" + Date.now() + `.${ext}`);
+    cb(null, fileName);
   },
 });
 
@@ -76,7 +78,7 @@ var upload = multer({
   storage: storage,
   limits: { fileSize: maxSize },
   fileFilter: function (req, file, cb) {
-    console.log(req);
+    // console.log(req);
     // Set the filetypes, it is optional
     var filetypes = /pdf|jpeg|jpg|png/;
     var mimetype = filetypes.test(file.mimetype);
@@ -98,62 +100,51 @@ var upload = multer({
 }).single("res"); //frontend se file
 
 app.post("/upload", async (req, res, next) => {
-  const email = req.body.email;
-  upload(req, res, function (err) {
-    console.log("104");
-    console.log(req.body);
-    if (err) {
-      console.log("================");
-      console.log(err);
+  const email = req.query.email;
+  const type = req.query.type;
+  if (type === "customer") {
+    var user_exist = await CUSTOMER_SCHEMA.findOne({ email: email });
+    if (user_exist) {
+      if (user_exist.password === req.query.password) {
+        upload(req, res, function (err) {
+          if (err) {
+            console.log("================");
+            console.log(err);
+          } else {
+            res.status(200).send({ msg: "file uploaded successfully" });
+          }
+        });
+        // resp
+        //   .status(200)
+        //   .send({ msg: `welcome Back ${res_exist.res_name}`, data: res_exist });
+      } else {
+        res.status(400).send({ msg: "Invalid Password" });
+      }
     } else {
-      res.status(200).send({ msg: "file uploaded successfully" });
+      res.status(400).send({ msg: "Invalid Email Check your email" });
     }
-  });
-  // const email = req.body.email;
-  // const type = req.body.type;
-  // if (type === "customer") {
-  //   var user_exist = await CUSTOMER_SCHEMA.findOne({ email: email });
-  //   if (user_exist) {
-  //     if (user_exist.password === req.body.password) {
-  //       upload(req, res, function (err) {
-  //         if (err) {
-  //           console.log("================");
-  //           console.log(err);
-  //         } else {
-  //           res.status(200).send({ msg: "file uploaded successfully" });
-  //         }
-  //       });
-  //       // resp
-  //       //   .status(200)
-  //       //   .send({ msg: `welcome Back ${res_exist.res_name}`, data: res_exist });
-  //     } else {
-  //       res.status(400).send({ msg: "Invalid Password" });
-  //     }
-  //   } else {
-  //     res.status(400).send({ msg: "Invalid Email Check your email" });
-  //   }
-  // } else {
-  //   var res_exist = await REGISTER_SCHEMA.findOne({ email: email });
-  //   if (res_exist) {
-  //     if (res_exist.password === req.body.password) {
-  //       upload(req, res, function (err) {
-  //         if (err) {
-  //           console.log("================");
-  //           console.log(err);
-  //         } else {
-  //           res.status(200).send({ msg: "file uploaded successfully" });
-  //         }
-  //       });
-  //       // resp
-  //       //   .status(200)
-  //       //   .send({ msg: `welcome Back ${res_exist.res_name}`, data: res_exist });
-  //     } else {
-  //       res.status(400).send({ msg: "Invalid Password" });
-  //     }
-  //   } else {
-  //     res.status(400).send({ msg: "Invalid Email Check your email" });
-  //   }
-  // }
+  } else {
+    var res_exist = await REGISTER_SCHEMA.findOne({ email: email });
+    if (res_exist) {
+      if (res_exist.password === req.query.password) {
+        upload(req, res, function (err) {
+          if (err) {
+            console.log("================");
+            console.log(err);
+          } else {
+            res.status(200).send({ msg: "file uploaded successfully" });
+          }
+        });
+        // resp
+        //   .status(200)
+        //   .send({ msg: `welcome Back ${res_exist.res_name}`, data: res_exist });
+      } else {
+        res.status(400).send({ msg: "Invalid Password" });
+      }
+    } else {
+      res.status(400).send({ msg: "Invalid Email Check your email" });
+    }
+  }
 
   // upload(req, res, function (err) {
   //   if (err) {
@@ -169,14 +160,12 @@ app.post("/upload", async (req, res, next) => {
 
 app.post("/registerRestaurant", async (req, resp) => {
   const email = req.body.email;
-  // console.log(email);
   const phoneNo = req.body.phoneNo;
-
-  var ID = "fw-" + email.substring(0, 3);
+  var ID = "fw-" + phoneNo;
 
   var res_exist = await REGISTER_SCHEMA.findOne({ email: email });
 
-  path = "./uploads/" + email;
+  path = "./uploads/Restaurant/" + email;
   if (res_exist) {
     resp.status(200).send({ msg: "Restaurant already Exist" });
   } else {
@@ -188,14 +177,6 @@ app.post("/registerRestaurant", async (req, resp) => {
           } else {
             console.log(path);
             console.log("New Directory created successfully !!");
-            var upResult = axios.post(
-              "http://localhost:4164/uploads",
-              req.files.res,
-              req.body.email,
-              req.body.password,
-              req.body.password
-            );
-            // console.log(upResult);
           }
         });
       } else {
@@ -214,15 +195,12 @@ app.post("/registerRestaurant", async (req, resp) => {
       open_time: req.body.openTime,
       phone_no: phoneNo,
       id: ID,
-      res_image: req.files.res.name,
+      // res_image: req.files,
     };
-    console.log(1);
 
-    // mkdir("./uploads/" + email);
-    // console.log(2);
     const restaurant = new REGISTER_SCHEMA(newRest);
     const result = await restaurant.save();
-    // console.log(result._id);
+
     resp.status(200).send(result);
   }
   // console.log(user_exist.email);
@@ -251,16 +229,31 @@ app.post("/registerCustomer", async (req, resp) => {
   const email = req.body.email;
   var user_exist = await CUSTOMER_SCHEMA.findOne({ email: email });
 
+  path = "./uploads/Customers/" + email;
+
   if (user_exist) {
     resp.status(400).send({ msg: "Customer Already Exist" });
   } else {
+    await fs.access(path, (error) => {
+      if (error) {
+        fs.mkdir(path, (error) => {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log(path);
+            console.log("New Directory created successfully !!");
+          }
+        });
+      } else {
+        console.log("Given Directory already exists !!");
+      }
+    });
     var newUser = {
       user_name: req.body.name,
       email: req.body.email,
       address: req.body.address,
       phone_no: req.body.phoneNo,
     };
-
     const user = new CUSTOMER_SCHEMA(newUser);
 
     // bcrypt password
@@ -269,8 +262,6 @@ app.post("/registerCustomer", async (req, resp) => {
     const result = await user.save();
     user_exist = await CUSTOMER_SCHEMA.findOne({ email: email });
 
-    // const id = user_exist._id.subString(0, 5);
-    // console.log(id);
     resp.status(200).send(result);
   }
 });
