@@ -1,0 +1,11 @@
+.food-menu-container{
+    background-color:#212529;
+    color: whitesmoke;
+}
+#res-bg-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+  }

@@ -1,0 +1,105 @@
+.res-container {
+  /* background-color: black; */
+  /* background-image: url("../../assest/img/smoke.mp4") !important; */
+  background-size: cover;
+  background-position: center;
+  color: #fea116;
+}
+
+
+#restaurantSearchBar::placeholder {
+  /* justify-self: center; */
+  text-align: center;
+}
+#restaurantSearchBar {
+  text-align: center;
+}
+.socialLink {
+  /* display: none; */
+  margin-top: 50px;
+  top: 250px !important;
+}
+.socialLink:hover {
+  /* display: flex; */
+  /* top: 15px !important; */
+}
+.img-div {
+  clip-path: circle();
+  /* clip-path: polygon(100% 0%, 100% 50%, 100% 100%, 25% 100%, 0% 50%,  0%); */
+}
+.box-div {
+  /* height: 51vh; */
+  text-transform: capitalize;
+}
+.team-item {
+  box-shadow: 0 0 45px rgba(0, 0, 0, 0.08);
+  /* height: calc(100% - 55px); */
+  transition: 0.7s;
+}
+
+.team-item img {
+  transition: 0.5s;
+}
+
+.team-item:hover img {
+  transform: scale(1.1);
+}
+
+.team-item:hover {
+  height: 100%;
+}
+
+.team-item .btn {
+  margin-top: 5px;
+  border-radius: 38px 38px 0 0;
+  outline: 2px solid #fea116;
+  padding: 15px;
+  color: #fea116;
+  background-color: #fff;
+}
+.team-item .btn:hover {
+  outline-color: #fea116;
+  color: white;
+  background-color: #fea116;
+}
+
+@media (max-width: 750px) {
+  .box-div {
+    height: 50vh;
+  }
+  .team-item {
+    box-shadow: 0 0 45px rgba(0, 0, 0, 0.08);
+    /* height: calc(100% - 95px); */
+    /* height: 15vh !important; */
+    transition: 0.7s;
+    display: flex;
+  }
+  .box-div:hover {
+    transition: 0.7s;
+    height: 65vh;
+  }
+  .team-item img {
+    width: 100%;
+    height: 200px;
+    /* border-radius: clip; */
+    /* height:  */
+    /* transition: 0.5s; */
+    /* height: calc(100% - 95px); */
+  }
+  .team-content {
+    padding: 10px;
+    /* margin-top: 15px; */
+    /* background-color: red; */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 50px;
+  }
+  .chMenu {
+    height: 25px;
+    /* width: 100%; */
+    background-color: red;
+    /* border: 2px solid #fea116;
+    outline: none; */
+  }
+}

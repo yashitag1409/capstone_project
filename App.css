@@ -1,0 +1,27 @@
+body {
+  background-color: #f1f8ff;
+}
+
+.my-color {
+  color: #fea116;
+}
+Link {
+  color: #fea116;
+}
+* {
+  /* color: #FEA116; */
+}
+
+html {
+  scroll-behavior: smooth;
+  /* scrollbar-width: 2px; */
+}
+::-webkit-scrollbar {
+  width: 3px;
+  color: black;
+  /* background-color: red; */
+  behavior: smooth;
+}
+.header-component{
+  margin-bottom: 55px;
+}

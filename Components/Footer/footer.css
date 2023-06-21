@@ -1,0 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Kalam&display=swap");
+.footer-container{
+  /* background-color: red !important; */
+}
+
+.footer-component {
+  font-family: "Kalam", cursive;
+}
+.nl-p {
+  text-transform: capitalize;
+}
+h4 {
+  color: #fea116;
+}
+.pro-head {
+  text-transform: uppercase;
+  font-family: "Kalam", cursive;
+}
+#name{
+    color: #fea116;
+    text-transform: uppercase;
+    font-size: large;
+    font-weight: 900;
+    
+}

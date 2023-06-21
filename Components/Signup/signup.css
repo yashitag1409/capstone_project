@@ -1,0 +1,50 @@
+.signup-heading {
+  font-size: 1.5rem;
+  text-shadow: 1px 1px grey;
+  text-align: center;
+  justify-content: center;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.signup-container {
+  /* display: flex; */
+  margin: 10px auto;
+  padding: 10px;
+  width: 100%;
+  font-size: 1.2rem;
+}
+.signup-footer-text {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 15px;
+  text-transform: capitalize;
+}
+#signin-btn:hover {
+  color: red !important;
+}
+
+.signup-content {
+  margin: 10px auto;
+  /* padding: 10px; */
+  background-color: pink;
+  height: 50vh;
+  width: 95vw;
+  overflow: hidden;
+  display: flex;
+  /* column-count: auto; */
+  flex-wrap: wrap;
+  /* column-gap: 1px; */
+}
+.by-username{
+    background-color: green;
+    width: 50%;
+    padding: 10px;
+}
+.by-id{
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+    width: 50%;
+    background-color: green;
+    margin: 0;
+}
